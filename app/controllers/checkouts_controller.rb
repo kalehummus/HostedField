@@ -36,8 +36,16 @@ class CheckoutsController < ApplicationController
     if result.success?
       # puts result.customer.id
       the_token = result.customer.payment_methods[0].token
+
     else
-      p result.errors
+      # p result
+      # verification = result.credit_card_verification
+      # p verification.status
+      # START HERE!!!!!!!!
+      # error_messages = result.errors.map { |error| "Error: #{verification.status}" }
+      # flash[:error] = error_messages
+      # redirect_to new_checkout_path
+
     end
 
     result = gateway.transaction.sale(
@@ -55,7 +63,18 @@ class CheckoutsController < ApplicationController
       flash[:error] = error_messages
       redirect_to new_checkout_path
     end
+
   end
+
+
+
+
+
+
+
+
+
+
 
   def _create_result_hash(transaction)
     status = transaction.status
