@@ -36,33 +36,49 @@ class CheckoutsController < ApplicationController
     if result.success?
       # puts result.customer.id
       the_token = result.customer.payment_methods[0].token
+      result = gateway.transaction.sale(
+        amount: amount,
+        payment_method_token: the_token,
+        :options => {
+          :submit_for_settlement => true
+        }
+      )
 
+      if result.success? || result.transaction
+        redirect_to checkout_path(result.transaction.id)
+      else
+        error_messages = result.errors.map { |error| "Error: #{error.code}: #{error.message}" }
+        flash[:error] = error_messages
+        redirect_to new_checkout_path
+      end
     else
       # p result
-      # verification = result.credit_card_verification
+      verification = result.credit_card_verification
       # p verification.status
       # START HERE!!!!!!!!
+      error_messages = "The verification status is " + verification.status + ". Please try a different card."
+      # error_messages = "Please try a different card."
       # error_messages = result.errors.map { |error| "Error: #{verification.status}" }
-      # flash[:error] = error_messages
-      # redirect_to new_checkout_path
-
-    end
-
-    result = gateway.transaction.sale(
-      amount: amount,
-      payment_method_token: the_token,
-      :options => {
-        :submit_for_settlement => true
-      }
-    )
-
-    if result.success? || result.transaction
-      redirect_to checkout_path(result.transaction.id)
-    else
-      error_messages = result.errors.map { |error| "Error: #{error.code}: #{error.message}" }
       flash[:error] = error_messages
       redirect_to new_checkout_path
+
     end
+
+    # result = gateway.transaction.sale(
+    #   amount: amount,
+    #   payment_method_token: the_token,
+    #   :options => {
+    #     :submit_for_settlement => true
+    #   }
+    # )
+    #
+    # if result.success? || result.transaction
+    #   redirect_to checkout_path(result.transaction.id)
+    # else
+    #   error_messages = result.errors.map { |error| "Error: #{error.code}: #{error.message}" }
+    #   flash[:error] = error_messages
+    #   redirect_to new_checkout_path
+    # end
 
   end
 
