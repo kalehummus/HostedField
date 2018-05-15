@@ -1,0 +1,208 @@
+<!-- HOSTED FIELDS -->
+<div class="wrapper">
+  <div class="checkout container">
+    <div class="content">
+
+      <header>
+        <h1>Hello and welcome to <br>A Very Hosted Field</h1>
+        <p>
+          A Journey to test Transactions
+        </p>
+      </header>
+
+      <%= form_tag("/checkouts", method: "post", id: "payment-form") do %>
+          <label for="amount">
+            <span class="input-label">Amount</span>
+            <div class="input-wrapper amount-wrapper">
+              <input id="amount" name="amount" type="tel" min="1" placeholder="Amount" value="10">
+            </div>
+          </label>
+
+
+          <!-- <label for="amount">
+            <span class="input-label">Amount</span>
+             <div class="input-wrapper amount-wrapper">
+              <input id="amount" name="customer-name" type="tel" min="1">
+            </div>
+          </label> -->
+
+
+          <label for="card-number">Card Number</label>
+          <div id="card-number" class="hosted-field"></div>
+
+          <label for="cvv" >CVV</label>
+          <div id="cvv" class="hosted-field" ></div>
+
+          <label for="expiration-date" >Expiration Date</label>
+          <div id="expiration-date" class="hosted-field"></div>
+
+          <!-- <input type="submit" value="Pay"> -->
+          <!-- <button class="button" type="submit" /disabled><span>Test Transaction</span></button> -->
+          <button class="button" type="submit"><span>Make a Customer, Create a Transaction</span></button>
+
+          <!-- <input type="submit" value="Create a Customer and Pay" class="button" disabled /><span></span> -->
+
+
+          <input name="payment_method_nonce" id="nonce" hidden>
+        <% end %>
+
+        <script src="https://js.braintreegateway.com/web/3.33.0/js/client.min.js"></script>
+        <script src="https://js.braintreegateway.com/web/3.33.0/js/hosted-fields.min.js"></script>
+        <script>
+          var form = document.querySelector('#payment-form');
+          var submit = document.querySelector('button[type="submit"]');
+          braintree.client.create({
+            authorization: "<%= @client_token %>"
+          }, function (clientErr, clientInstance) {
+            if (clientErr) {
+              console.error(clientErr);
+              return;
+            }
+
+
+
+            braintree.hostedFields.create({
+              client: clientInstance,
+              styles: {
+                'input': {
+                  'font-size': '1.2rem'
+                  // 'line-height':"18px"
+                },
+                'input.invalid': {
+                  'color': 'red'
+                },
+                'input.valid': {
+                  'color': 'green'
+                }
+
+              },
+              fields: {
+                number: {
+                  selector: '#card-number',
+                  placeholder: '4111 1111 1111 1111'
+                },
+                cvv: {
+                  selector: '#cvv',
+                  placeholder: '123'
+                },
+                expirationDate: {
+                  selector: '#expiration-date',
+                  placeholder: '10/2019'
+                }
+              }
+            }, function (hostedFieldsErr, hostedFieldsInstance) {
+              if (hostedFieldsErr) {
+                console.error(hostedFieldsErr);
+                return;
+              }
+
+              submit.removeAttribute('disabled');
+
+              form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                hostedFieldsInstance.tokenize(function (tokenizeErr, payload) {
+                  if (tokenizeErr) {
+                    console.error(tokenizeErr);
+                    return;
+                  }
+
+                  // If this was a real integration, this is where you would
+                  // send the nonce to your server.
+                  console.log('Got a nonce: ' + payload.nonce);
+
+                  document.querySelector('#nonce').value = payload.nonce;
+                  form.submit();
+                });
+              }, false);
+            });
+          });
+        </script>
+
+
+    </div>
+  </div>
+</div>
+
+
+<%= javascript_include_tag 'application', 'data-turbolinks-suppress-warning' => true, 'data-turbolinks-track' => true %>
+
+<style media="screen" type="text/css">
+
+  .hosted-field{
+    height:59px;
+    border: 1px solid #b5b5b5;
+    border-radius: 3px;
+    padding-left: 10px;
+    font-size: 1.2rem;
+  }
+  .braintree-hosted-fields-focused{
+    background-color: #f9f9f9;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+  }
+
+</style>
+
+<!-- DROP IN UI -->
+<!-- <div class="wrapper">
+  <div class="checkout container">
+    <div class="content">
+
+      <header>
+        <h1>Hi, <br>Let's test a transaction</h1>
+        <p>
+          Make a test payment with Braintree using PayPal or a card
+        </p>
+      </header>
+
+      <%= form_tag("/checkouts", method: "post", id: "payment-form") do %>
+        <section>
+          <label for="amount">
+            <span class="input-label">Amount</span>
+            <div class="input-wrapper amount-wrapper">
+              <input id="amount" name="amount" type="tel" min="1" placeholder="Amount" value="10">
+            </div>
+          </label>
+
+          <div class="bt-drop-in-wrapper">
+            <div id="bt-dropin"></div>
+          </div>
+        </section>
+
+        <input type="hidden" id="nonce" name="payment_method_nonce" />
+        <button class="button" type="submit"><span>Test Transaction</span></button>
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://js.braintreegateway.com/web/dropin/1.10.0/js/dropin.min.js"></script>
+<script>
+  var form = document.querySelector('#payment-form');
+  var client_token = "<%= @client_token %>";
+
+  braintree.dropin.create({
+    authorization: client_token,
+    container: '#bt-dropin',
+    paypal: {
+      flow: 'vault'
+    }
+  }, function (createErr, instance) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      instance.requestPaymentMethod(function (err, payload) {
+        if (err) {
+          console.log('Error', err);
+          return;
+        }
+
+        // Add the nonce to the form and submit
+        document.querySelector('#nonce').value = payload.nonce;
+        form.submit();
+      });
+    });
+  });
+</script>
+<%= javascript_include_tag 'application', 'data-turbolinks-suppress-warning' => true, 'data-turbolinks-track' => true %> -->

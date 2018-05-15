@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A Hosted Field Example</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= favicon_link_tag "favicon.png" %>
+  <%= csrf_meta_tags %>
+</head>
+<body data-no-turbolink>
+  <header class="main">
+    <div class="container wide">
+      <div class="content slim">
+        <div class="set">
+          <div class="fill">
+            <a class="pseudoshop" href="/">SHRIMP<strong>SHOP</strong></a>
+          </div>
+
+          <div class="fit">
+            <a class="braintree" href="https://developers.braintreepayments.com/guides/hosted-fields" target="_blank">Braintree</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render partial: "layouts/notifications" %>
+  </header>
+
+  <%= yield %>
+
+</body>
+</html>
