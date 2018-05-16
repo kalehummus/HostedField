@@ -18,7 +18,19 @@
             </div>
           </label>
 
+          <label for="first_name">
+            <span class="input-label">First Name</span>
+            <div class="customer-field">
+              <input id="first_name" name="first_name" placeholder="Justine">
+            </div>
+          </label>
 
+          <label for="last_name">
+            <span class="input-label">Last Name</span>
+            <div class="customer-field ">
+              <input id="last_name" name="last_name" placeholder="Beebor">
+            </div>
+          </label>
 
           <label for="card-number">Card Number</label>
           <div id="card-number" class="hosted-field"></div>
@@ -29,11 +41,9 @@
           <label for="expiration-date" >Expiration Date</label>
           <div id="expiration-date" class="hosted-field"></div>
 
-          <!-- <input type="submit" value="Pay"> -->
-          <!-- <button class="button" type="submit" /disabled><span>Test Transaction</span></button> -->
-          <button class="button" type="submit"><span>Make a Customer, Create a Transaction</span></button>
 
-          <!-- <input type="submit" value="Create a Customer and Pay" class="button" disabled /><span></span> -->
+          <button class="button" type="submit">Make a Customer, Create a Transaction</button>
+
 
 
           <input name="payment_method_nonce" id="nonce" hidden>
@@ -129,11 +139,34 @@
     padding-left: 10px;
     font-size: 1.2rem;
   }
+
   .braintree-hosted-fields-focused{
     background-color: #f9f9f9;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
   }
 
+  #first_name, #last_name{
+    height:59px;
+    border: 1px solid #b5b5b5;
+    border-radius: 3px;
+    padding-left: 10px;
+    font-size: 1.2rem;
+    font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  }
+
+  #first_name:focus, #last_name:focus{
+    background-color: #f9f9f9;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+  }
+
+  #button{
+    height:59px;
+    border: 1px solid #b5b5b5;
+    border-radius: 3px;
+    padding-left: 10px;
+    font-size: 1.2rem;
+    width:645px;
+  }
 </style>
 
 <!-- DROP IN UI -->

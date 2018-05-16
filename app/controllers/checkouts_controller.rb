@@ -22,11 +22,13 @@ class CheckoutsController < ApplicationController
     amount = params["amount"] # In production you should not take amounts directly from clients
 
     nonce = params["payment_method_nonce"]
+    first_name = params["first_name"]
+    last_name = params["last_name"]
 
     result = gateway.customer.create(
       :payment_method_nonce => nonce,
-      # :first_name => "",
-      # :last_name => "table",
+      :first_name => first_name,
+      :last_name => last_name,
       :credit_card => {
         :options => {
           :verify_card => true
@@ -52,34 +54,11 @@ class CheckoutsController < ApplicationController
         redirect_to new_checkout_path
       end
     else
-      # p result
       verification = result.credit_card_verification
-      # p verification.status
-      # START HERE!!!!!!!!
       error_messages = "The verification status is " + verification.status + ". Please try a different card."
-      # error_messages = "Please try a different card."
-      # error_messages = result.errors.map { |error| "Error: #{verification.status}" }
       flash[:error] = error_messages
       redirect_to new_checkout_path
-
     end
-
-    # result = gateway.transaction.sale(
-    #   amount: amount,
-    #   payment_method_token: the_token,
-    #   :options => {
-    #     :submit_for_settlement => true
-    #   }
-    # )
-    #
-    # if result.success? || result.transaction
-    #   redirect_to checkout_path(result.transaction.id)
-    # else
-    #   error_messages = result.errors.map { |error| "Error: #{error.code}: #{error.message}" }
-    #   flash[:error] = error_messages
-    #   redirect_to new_checkout_path
-    # end
-
   end
 
 
